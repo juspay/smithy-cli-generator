@@ -164,7 +164,14 @@ export const generateOptions = (params, isAuthReq) => {
 }`;
         return ` .option("${flag}", "${desc}", ${parserFn})`;
       }
-
+      if (param.type === "boolean") {
+        const parserFn = `(value) => {
+  if (value.toLowerCase() === 'true') return true;
+  if (value.toLowerCase() === 'false') return false;
+  throw new Error("--${param.name} must be true or false");
+}`;
+        return ` .option("${flag}", "${desc}", ${parserFn})`;
+      }
       if (param.type === "integer") {
         const parserFn = `(value) => {
   const parsed = parseInt(value, 10);
@@ -190,7 +197,7 @@ export const generateParamDocs = (
   params,
   indent = 4,
   isTopLevel = true,
-  isAuthReq
+  isAuthReq,
 ) => {
   let paramDocs = "";
   const processParam = (param, currentIndent, topLevel) => {
@@ -218,7 +225,7 @@ export const generateParamDocs = (
         if (param.documentation) paramDocs += ` : ${param.documentation}`;
         paramDocs += "\n";
         Object.values(param.members || {}).forEach((m) =>
-          processParam(m, currentIndent + 4, false)
+          processParam(m, currentIndent + 4, false),
         );
         break;
 
@@ -290,7 +297,7 @@ export const generateCliUsageExample = (
   actionName,
   params,
   commandPrefix,
-  isAuthReq
+  isAuthReq,
 ) => {
   const requiredParams = params.filter((param) => param.required);
   const optionalParams = params.filter((param) => !param.required);
@@ -344,7 +351,7 @@ export const generateMixedUsageExample = (
   actionName,
   params,
   commandPrefix,
-  isAuthReq
+  isAuthReq,
 ) => {
   const someParams = params.slice(0, 2); // Take first 2 params as example
   let example = `$ ${commandPrefix} ${actionName} @params.json`;
@@ -567,17 +574,17 @@ export const getRequiredParamsList = (params, parentKey = "", isAuthReq) => {
 
     if (param.type === "structure" && param.members) {
       required = required.concat(
-        getRequiredParamsList(Object.values(param.members), fullName)
+        getRequiredParamsList(Object.values(param.members), fullName),
       );
     } else if (param.type === "list" && param.member) {
       // Recurse into the member, whatever type it is
       required = required.concat(
-        getRequiredParamsList([param.member], `${fullName}[]`)
+        getRequiredParamsList([param.member], `${fullName}[]`),
       );
     } else if (param.type === "map" && param.value) {
       // Recurse into the map value, whatever type it is
       required = required.concat(
-        getRequiredParamsList([param.value], `${fullName}{value}`)
+        getRequiredParamsList([param.value], `${fullName}{value}`),
       );
     }
   });

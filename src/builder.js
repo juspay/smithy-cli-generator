@@ -227,7 +227,7 @@ export async function startBuilder(
         blobFileHandling: generateBlobFieldHandling(commands[i].inputs),
         client: function (text, render) {
           if (isAuthReq && !isAuthAPI(commands[i].traits)) {
-            return `const client = await getClient(options.token, true);`;
+            return `const client = await getClient(finalOptions.token, true);`;
           } else {
             return `const client = await getClient(null, false);`;
           }
