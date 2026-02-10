@@ -67,7 +67,6 @@ export async function getBaseUrl() {
     const config = await readConfigFile();
     return config.baseUrl || null; // return null if not set
   } catch (err) {
-    console.error("Error reading endpoint:", err);
     return null;
   }
 }
