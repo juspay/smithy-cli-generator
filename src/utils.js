@@ -182,6 +182,9 @@ export const generateOptions = (params, isAuthReq) => {
 }`;
         return ` .option("${flag}", "${desc}", ${parserFn})`;
       }
+      if (isList) {
+        return ` .option("${flag}", "${desc}", [])`;
+      }
 
       return ` .option("${flag}", "${desc}")`;
     })
